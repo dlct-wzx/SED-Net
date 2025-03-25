@@ -455,7 +455,7 @@ class ori_simple_data(Dataset_std):
         
         return_items.append(_prims.astype(np.int64))
 
-        return_items.append(np.zeros((10000,), dtype=np.long))
+        return_items.append(np.zeros((10000,), dtype=np.int64))
         return_items.append(np.zeros((10000,), dtype=np.float32))
 
         if self.if_train:

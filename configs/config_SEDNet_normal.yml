@@ -3,10 +3,10 @@ comment=""
 [train]
 model_path = "SEDNet_{}_lr_{}_mode_{}_k{}"
 
-gpu = "4,5"
+gpu = "0"
 
 # Dataset path
-dataset = ""
+dataset = "data_parsenet"
 
 # Whether to load a pretrained model or not
 preload_model = True
@@ -19,7 +19,7 @@ pretrain_opti_path = ""
 
 
 # Whether to input the normals or not
-normals = True
+normals = False
 
 proportion = 1.0
 

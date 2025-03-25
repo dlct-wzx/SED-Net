@@ -5,3 +5,7 @@ predictions/results/*
 src/normal_smooth_cache/*
 src/__pycache__
 trains
+parsenet/*
+sed_net_data/*
+data_parsenet/*
+**/__pycache__/

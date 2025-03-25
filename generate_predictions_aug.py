@@ -8,7 +8,7 @@ from read_config import Config
 config = Config(sys.argv[1])
 GPU = config.gpu
 
-os.environ['CUDA_VISIBLE_DEVICES'] = GPU
+os.environ['CUDA_VISIBLE_DEVICES'] = '0'
 
 from shutil import copyfile
 import numpy as np
@@ -65,7 +65,7 @@ use_hpnet_type_iou = False
 drop_out_num = 2000 # ====== type seg rand drop  
 
 
-prefix="/data/ytliu/parsenet/" # test dataset path prefix
+prefix="./parsenet/" # test dataset path prefix
 starts = 0  # default 0 
 
 if HPNet_embed:
@@ -73,7 +73,7 @@ if HPNet_embed:
 
 
 
-SAVE_VIZ = not sys.argv[2] == "NoSave"
+SAVE_VIZ = not sys.argv[2] == "VIZ"
 
 # type 结果进行数据增强投票
 MULTI_VOTE = sys.argv[3] == "multi_vote"
@@ -87,7 +87,8 @@ if fold5Drop:
     print("type_fold5drop")  # ======= 效果好
 
 
-if_normals = config.normals
+# if_normals = config.normals
+# if_normals = False
 
 Use_MyData = True if config.dataset == "my" else False
 # =============== test dataset config
@@ -217,10 +218,12 @@ for val_b_id, data in enumerate(loader_test):
     normals = normals_.cuda( )
     labels = labels.numpy()
     primitives_ = primitives_.numpy()
-    
+    print("points", points.shape)
+    print("normals", normals.shape)
     with torch.no_grad():
         if if_normals:
             _input = torch.cat([points, normals], 2)
+            print("_input", _input.shape)
             primitives_log_prob = model(
                 _input.permute(0, 2, 1), None, False
             )[1]
