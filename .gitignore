@@ -9,3 +9,6 @@ parsenet/*
 sed_net_data/*
 data_parsenet/*
 **/__pycache__/
+nohup.out
+val/
+results/

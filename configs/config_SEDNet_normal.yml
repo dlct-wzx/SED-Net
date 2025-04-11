@@ -13,8 +13,8 @@ preload_model = True
 
 
 # pre-trained model path
-pretrain_model_path = "ckpts/pretrain_sed_net_InstBest.pth"
-pretrain_model_type_path = "ckpts/pretrain_sed_net.pth"
+pretrain_model_path = "trains/SEDNet_6_lr_0.0001_mode_15_k64/ckpts/SEDNet_6_lr_0.0001_mode_15_k64_InstBest.pth"
+pretrain_model_type_path = "trains/SEDNet_6_lr_0.0001_mode_15_k64/ckpts/SEDNet_6_lr_0.0001_mode_15_k64_TypeBest.pth"
 pretrain_opti_path = ""
 
 
@@ -34,7 +34,7 @@ num_epochs = 200
 grid_size = 20
 
 
-batch_size = 4
+batch_size = 6
 
 # Optimization
 optim = adamW

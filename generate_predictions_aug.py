@@ -87,7 +87,7 @@ if fold5Drop:
     print("type_fold5drop")  # ======= 效果好
 
 
-# if_normals = config.normals
+if_normals = config.normals
 # if_normals = False
 
 Use_MyData = True if config.dataset == "my" else False
@@ -146,8 +146,8 @@ model = SEDNet(
         primitives=True,
         num_primitives=6,
         loss_function=Loss.triplet_loss,
-        mode=5,
-        num_channels=6,
+        mode=5 if if_normals else 0,  
+        num_channels=6 if if_normals else 3,
         combine_label_prim=True,   # early fusion
         edge_module=True,  # add edge cls module
         late_fusion=True,  
@@ -159,8 +159,8 @@ model_inst = SEDNet(
         primitives=True,
         num_primitives=6,
         loss_function=Loss.triplet_loss,
-        mode=5,
-        num_channels=6,
+        mode=5 if if_normals else 0,  
+        num_channels=6 if if_normals else 3,
         combine_label_prim=True,   # early fusion
         edge_module=True,  # add edge cls module
         late_fusion=True,    # ======================================
@@ -218,12 +218,9 @@ for val_b_id, data in enumerate(loader_test):
     normals = normals_.cuda( )
     labels = labels.numpy()
     primitives_ = primitives_.numpy()
-    print("points", points.shape)
-    print("normals", normals.shape)
     with torch.no_grad():
         if if_normals:
             _input = torch.cat([points, normals], 2)
-            print("_input", _input.shape)
             primitives_log_prob = model(
                 _input.permute(0, 2, 1), None, False
             )[1]
