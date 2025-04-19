@@ -160,10 +160,10 @@ class PrimitivesEmbeddingDGCNGn(nn.Module):
             self.mlp_seg_prob2 = torch.nn.Conv1d(256, self.emb_size, 1)
             self.bn_seg_prob1 = nn.GroupNorm(4, 256)
 
-        if primitives:
-            self.mlp_prim_prob1 = torch.nn.Conv1d(256, 256, 1)
-            self.mlp_prim_prob2 = torch.nn.Conv1d(256, num_primitives, 1)
-            self.bn_prim_prob1 = nn.GroupNorm(4, 256)
+        # if primitives:
+        self.mlp_prim_prob1 = torch.nn.Conv1d(256, 256, 1)
+            # self.mlp_prim_prob2 = torch.nn.Conv1d(256, num_primitives, 1)
+        self.bn_prim_prob1 = nn.GroupNorm(4, 256)
 
     def forward(self, points, labels=None, compute_loss=True):
         """
@@ -265,10 +265,13 @@ class SEDNet(nn.Module):
             self.mlp_seg_prob2 = torch.nn.Conv1d(256, self.emb_size, 1)
             self.bn_seg_prob1 = nn.GroupNorm(4, 256)
 
-        if primitives:
-            self.mlp_prim_prob1 = torch.nn.Conv1d(256, 256, 1)
-            self.mlp_prim_prob2 = torch.nn.Conv1d(256, num_primitives, 1)
-            self.bn_prim_prob1 = nn.GroupNorm(4, 256)
+        # if primitives:
+        #     self.mlp_prim_prob1 = torch.nn.Conv1d(256, 256, 1)
+        #     self.mlp_prim_prob2 = torch.nn.Conv1d(256, num_primitives, 1)
+        #     self.bn_prim_prob1 = nn.GroupNorm(4, 256)
+        
+        self.mlp_prim_prob1 = torch.nn.Conv1d(256, 256, 1)
+        self.bn_prim_prob1 = nn.GroupNorm(4, 256)
         
         self.predict_normal = predict_normal
 
@@ -313,8 +316,9 @@ class SEDNet(nn.Module):
             type_logit = self.mlp_prim_prob2(x_type)  
             primitives_log_prob = self.logsoftmax(type_logit)
 
-            if self.edge_module:
-                edges_pred = self.edge_module(x_type)  # B x 2 x N
+        if self.edge_module:
+            x_type = F.dropout(F.relu(self.bn_prim_prob1(self.mlp_prim_prob1(x_all))), self.drop)
+            edges_pred = self.edge_module(x_type)  # B x 2 x N
 
         if self.embedding:
             x = F.dropout(F.relu(self.bn_seg_prob1(self.mlp_seg_prob1(x_all))), self.drop)  # 256 -> 256
@@ -333,6 +337,8 @@ class SEDNet(nn.Module):
             embed_loss = self.loss_function(embedding, labels.data.cpu().numpy())  # cluster instance
         else:
             embed_loss = torch.zeros(1).cuda()
+
+        return edges_pred
 
         ret_res = [embedding, primitives_log_prob, embed_loss,]
         if self.edge_module:

@@ -66,16 +66,16 @@ userspace = ""
 Loss = EmbeddingLoss(margin=1.0)
 
 model_inst = SEDNet(
-        embedding=True,
+        embedding=False,
         emb_size=128,
-        primitives=True,
+        primitives=False,
         num_primitives=6,
         loss_function=Loss.triplet_loss,
         mode=5 if if_normals else 0,  
         num_channels=6 if if_normals else 3,
-        combine_label_prim=True,   # early fusion
+        combine_label_prim=False,   # early fusion
         edge_module=True,  # add edge cls module
-        late_fusion=True,    # ======================================
+        late_fusion=False,    # ======================================
         nn_nb=my_knn  # default is 64
     )
 
@@ -84,7 +84,7 @@ model_inst = model_inst.cuda( )
 model_inst.eval()
 
 
-state_dict = torch.load(config.pretrain_model_type_path)
+state_dict = torch.load('./trains/only_edge/ckpts/only_edge.pth')
 state_dict = {k[k.find(".")+1:]: state_dict[k] for k in state_dict.keys()} if list(state_dict.keys())[0].startswith("module.") else state_dict
 model_inst.load_state_dict(state_dict)
 
@@ -110,7 +110,7 @@ for file in os.listdir(test_src):
     points = torch.from_numpy(points).float().cuda()
     print(points.shape)
     with torch.no_grad():
-        embedding, _, _, edges_pred = model_inst(
+        edges_pred = model_inst(
             points.permute(0, 2, 1), None, False
         )
     if edges_pred is not None:
